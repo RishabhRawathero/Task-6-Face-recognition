@@ -1,0 +1,120 @@
+#use this url to download and install face recognition https://github.com/ageitgey/face_recognition.git
+# youtube video url to download face_recognition with dlib
+import os
+import cv2
+import face_recognition
+model = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+while True:
+    cap = cv2.VideoCapture(0)
+    ret , testimg = cap.read()
+    faces =model.detectMultiScale(testimg)
+    
+    if len(faces) == 0:
+        cv2.putText(testimg, "No Face Found", (220, 120) , cv2.FONT_HERSHEY_COMPLEX, 1, (0,0,255), 2)
+        cv2.imshow("Test image",testimg)
+        cv2.waitKey(1)
+        
+    else:
+       
+        cv2.putText(testimg, " Face Found", (220, 120) , cv2.FONT_HERSHEY_COMPLEX, 1, (0,0,255), 2)
+        break
+cv2.imshow("Test Image",testimg)        
+cv2.waitKey(10000)            
+cv2.destroyAllWindows()
+cap.release()
+
+myimg = face_recognition.load_image_file('my1.jpg')#myimage
+friendimage = face_recognition.load_image_file('vimal.jpg')#friendimage
+myimg = cv2.cvtColor(myimg, cv2.COLOR_BGR2RGB)
+imgTest = cv2.cvtColor(testimg, cv2.COLOR_BGR2RGB)#converting BGR format of image to RGB format
+friendimage = cv2.cvtColor(friendimage, cv2.COLOR_BGR2RGB)
+face = face_recognition.face_locations(myimg)[0]#finding face coordinates of captured image
+encodeFace = face_recognition.face_encodings(myimg)[0]# encoding face to identify features of face its in dlib libraray 
+cv2.rectangle(myimg, (face[3], face[0]), (face[1], face[2]), (255, 0, 255), 2) # making a rectangle around face
+
+faceTest = face_recognition.face_locations(imgTest)[0]
+encodeTestFace = face_recognition.face_encodings(imgTest)[0]
+cv2.rectangle(imgTest, (faceTest[3], faceTest[0]), (faceTest[1], faceTest[2]), (255, 0, 255), 2)
+
+
+faceTest2 = face_recognition.face_locations(friendimage)[0]
+encodeTestFace2 = face_recognition.face_encodings(friendimage)[0]
+cv2.rectangle(friendimage, (faceTest2[3], faceTest2[0]), (faceTest2[1], faceTest2[2]), (255, 0, 255), 2)
+results = face_recognition.compare_faces([encodeFace], encodeTestFace)#compare faces
+faceDis = face_recognition.face_distance([encodeFace], encodeTestFace)#compare face feature distance  between original image and captured image
+
+results2 = face_recognition.compare_faces([encodeTestFace], encodeTestFace2)
+faceDis2 = face_recognition.face_distance([encodeTestFace], encodeTestFace2)
+
+
+if results2[0] == True:# to put text on image
+    cv2.putText(imgTest, f'Matched with friendimage ={results2} {round(faceDis2[0], 2)}', (50, 20), cv2.FONT_HERSHEY_COMPLEX, 0.7, (0, 255, 0), 2)
+    cv2.putText(imgTest, f'Does not Matched with myimage ={results} {round(faceDis[0], 2)}', (50, 100), cv2.FONT_HERSHEY_COMPLEX, 0.7, (0, 0, 255 ), 2)    
+if results[0] == True:
+    cv2.putText(imgTest, f'Matched with myimage ={results} {round(faceDis[0], 2)}', (50, 20), cv2.FONT_HERSHEY_COMPLEX, 0.7, (0, 255, 0), 2)
+    cv2.putText(imgTest, f'Does not Matched with friendimage ={results2} {round(faceDis2[0], 2)}', (40, 100), cv2.FONT_HERSHEY_COMPLEX, 0.7, (0, 0,255), 2)
+    
+    
+cv2.imshow('my image', myimg)
+cv2.imshow(' imagetest', imgTest)
+cv2.imshow('friend image',friendimage)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+print(results[0],faceDis)
+print(results2[0],faceDis2)
+
+def creating_instance():#instance creation function
+    import os
+    cmd = 'aws ec2 run-instances --image-id ami-0ad704c126371a549 --instance-type  t2.micro --count  1 --subnet-id  subnet-a2fa11c9 --security-group-ids sg-01a2617026420ce94  --key-name  riRAWAT.99'
+    import subprocess
+    subprocess=subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+    subprocess_return = subprocess.stdout.read()
+    s = subprocess_return.decode('UTF-8')
+    print("ec2 instance created")
+    print(s)
+    s=s.replace(',','')
+    s= s.replace('"','')
+    index= s.rfind("InstanceId")
+    index1= s.rfind("InstanceType")
+    instanceid=s[index+11:index1]
+    instanceid=instanceid.strip()
+    return instanceid
+    
+def creating_volume():#volume creation function
+    import os
+    cmd = 'aws ec2 create-volume --size 1 --availability-zone ap-south-1a'
+    import subprocess
+    subprocess=subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+    subprocess_return = subprocess.stdout.read()
+    s = subprocess_return.decode('UTF-8')
+    print("Volume Created For ec2 instance")
+    print(s)
+    res=s.split()
+    s=s.replace(',','')
+    s= s.replace('"','')
+    index= s.rfind("vol")
+    index1= s.rfind("Iops")
+    volumeid=s[index:index1]
+    volumeid=volumeid.strip()
+    print(volumeid)
+    return volumeid  
+    
+if results2[0] == True:#friend comparison with captured image
+    
+    inst_id = creating_instance()
+    vol_id = creating_volume()
+    os.system(f"aws ec2 attach-volume --volume-id {vol_id} --instance-id {inst_id} --device /dev/xvda ")
+    
+    import smtplib
+import pywhatkit
+if results[0] == True:#my comparison with captured image
+    s = smtplib.SMTP('smtp.gmail.com',587)
+    s.starttls()
+    #turn on less secure app
+    s.login("rishabhrawat5074@gmail.com","riRAWAT.99")
+    message = "I am Rishabh"
+    s.sendmail("rishabhrawat5074@gmail.com","rishabhrawatgod1@gmail.com",message)
+    s.quit()
+    pywhatkit.sendwhatmsg_instantly("+919557840734","hey")
+    
+  
