@@ -111,10 +111,10 @@ if results[0] == True:#my comparison with captured image
     s = smtplib.SMTP('smtp.gmail.com',587)
     s.starttls()
     #turn on less secure app
-    s.login("rishabhrawat5074@gmail.com","Password")
+    s.login("senders_id","Password")
     message = "I am Rishabh"
-    s.sendmail("rishabhrawat5074@gmail.com","rishabhrawatgod1@gmail.com",message)
+    s.sendmail("sender_id","receivers_id",message)
     s.quit()
-    pywhatkit.sendwhatmsg_instantly("+919557840734","hey")
+    pywhatkit.sendwhatmsg_instantly("+919555555567","hey")
     
   
