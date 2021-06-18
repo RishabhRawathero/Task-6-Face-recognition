@@ -1,4 +1,4 @@
-#use this url to download and install face recognition https://github.com/ageitgey/face_recognition.git
+#use this url to download and install face recognition https://www.youtube.com/watch?v=lPE5-yOI0CM
 # youtube video url to download face_recognition with dlib
 import os
 import cv2
@@ -100,12 +100,11 @@ def creating_volume():#volume creation function
     return volumeid  
     
 if results2[0] == True:#friend comparison with captured image
-    
     inst_id = creating_instance()
     vol_id = creating_volume()
     os.system(f"aws ec2 attach-volume --volume-id {vol_id} --instance-id {inst_id} --device /dev/xvda ")
     
-    import smtplib
+import smtplib
 import pywhatkit
 if results[0] == True:#my comparison with captured image
     s = smtplib.SMTP('smtp.gmail.com',587)
