@@ -114,6 +114,6 @@ if results[0] == True:#my comparison with captured image
     message = "I am Rishabh"
     s.sendmail("sender_id","receivers_id",message)
     s.quit()
-    pywhatkit.sendwhatmsg_instantly("Receiver mobile number","hey")
+    pywhatkit.sendwhatmsg_instantly("Receiver mobile number with country code","hey")
     
   
