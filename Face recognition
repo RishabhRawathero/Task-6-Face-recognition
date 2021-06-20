@@ -99,10 +99,28 @@ def creating_volume():#volume creation function
     print(volumeid)
     return volumeid  
     
+    
+def attach(i,v):
+    print(v)
+    print(i)
+    cmd=f'aws ec2 attach-volume --volume-id {v} --instance-id {i} --device /dev/sdf'
+    a=os.system(cmd)
+    print(a)
+    return a
+    
 if results2[0] == True:#friend comparison with captured image
-    inst_id = creating_instance()
-    vol_id = creating_volume()
-    os.system(f"aws ec2 attach-volume --volume-id {vol_id} --instance-id {inst_id} --device /dev/xvda ")
+    inst_id=creating_instance()
+    vol_id= creating_volume()
+    print(inst_id)
+    print(vol_id)
+    c=0
+    while c < 30:
+        a=attach(inst_id,vol_id)
+        if a == 0:
+            break
+        print(c)
+        c+=1
+        
     
 import smtplib
 import pywhatkit
